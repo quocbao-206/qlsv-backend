@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng Nhập – Quản Lý Sinh Viên</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Be Vietnam Pro", sans-serif;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0f4c81 0%, #065f46 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .login-card {
+        background: #fff;
+        border-radius: 24px;
+        width: 420px;
+        max-width: 100%;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+      }
+      .login-header {
+        background: linear-gradient(135deg, #0f4c81, #1a6bb5);
+        padding: 36px 40px 28px;
+        text-align: center;
+      }
+      .login-logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.2);
+        margin: 0 auto 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+      .login-header h1 {
+        color: #fff;
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .login-header p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.875rem;
+      }
+      .login-body {
+        padding: 32px 40px 36px;
+      }
+      .role-tabs {
+        display: flex;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+      .role-tab {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: #f8fafc;
+        color: #64748b;
+        border: none;
+        transition: all 0.2s;
+      }
+      .role-tab.active {
+        background: #0f4c81;
+        color: #fff;
+      }
+      .form-group {
+        margin-bottom: 18px;
+      }
+      .form-label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .form-input {
+        width: 100%;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 0.9rem;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .form-input:focus {
+        border-color: #0f4c81;
+        box-shadow: 0 0 0 4px rgba(15, 76, 129, 0.08);
+      }
+      .btn-primary {
+        width: 100%;
+        background: linear-gradient(135deg, #0f4c81, #1a6bb5);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(15, 76, 129, 0.3);
+      }
+      .btn-primary:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+      .footer-link {
+        text-align: center;
+        margin-top: 18px;
+        font-size: 0.8rem;
+        color: #94a3b8;
+      }
+      @keyframes modalIn {
+        from { opacity: 0; transform: scale(0.93); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay.show {
+        display: flex;
+      }
+      .modal-box {
+        background: #fff;
+        border-radius: 20px;
+        width: 420px;
+        max-width: 95vw;
+        overflow: hidden;
+        animation: modalIn 0.3s ease;
+      }
+      .modal-head {
+        background: linear-gradient(135deg, #0f4c81, #1a6bb5);
+        color: #fff;
+        padding: 22px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .modal-head h5 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+      .modal-body {
+        padding: 28px;
+      }
+      .pw-wrap {
+        position: relative;
+      }
+      .pw-toggle {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #94a3b8;
+        font-size: 1.1rem;
+      }
+      .alert-msg {
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        margin-bottom: 16px;
+        display: none;
+      }
+      .alert-msg.error {
+        display: block;
+        background: #fee2e2;
+        color: #991b1b;
+        border-left: 3px solid #ef4444;
+      }
+      .alert-msg.success {
+        display: block;
+        background: #d1fae5;
+        color: #065f46;
+        border-left: 3px solid #10b981;
+      }
+      .btn-outline {
+        width: 100%;
+        background: transparent;
+        color: #64748b;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 11px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+        margin-top: 10px;
+      }
+      .btn-outline:hover {
+        border-color: #0f4c81;
+        color: #0f4c81;
+      }
+
+      /* OTP input styling */
+      .otp-inputs {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin: 20px 0;
+      }
+      .otp-input {
+        width: 52px;
+        height: 56px;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        outline: none;
+        font-family: inherit;
+        color: #0f4c81;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .otp-input:focus {
+        border-color: #0f4c81;
+        box-shadow: 0 0 0 4px rgba(15, 76, 129, 0.1);
+      }
+      .otp-input.filled {
+        border-color: #10b981;
+        background: #f0fdf4;
+      }
+      .resend-row {
+        text-align: center;
+        font-size: 0.82rem;
+        color: #94a3b8;
+        margin-top: 4px;
+        margin-bottom: 8px;
+      }
+      .resend-btn {
+        background: none;
+        border: none;
+        color: #0f4c81;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.82rem;
+        text-decoration: underline;
+      }
+      .resend-btn:disabled {
+        color: #94a3b8;
+        cursor: not-allowed;
+        text-decoration: none;
+      }
+      .countdown {
+        font-weight: 700;
+        color: #ef4444;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo">📚</div>
+        <h1>Quản Lý Sinh Viên</h1>
+        <p>Hệ thống quản lý sinh viên</p>
+      </div>
+      <div class="login-body">
+        <div class="role-tabs">
+          <button class="role-tab active" id="tab-sv" onclick="switchRole('sv')">
+            🎓 Sinh Viên
+          </button>
+          <button class="role-tab" id="tab-gv" onclick="switchRole('gv')">
+            👨‍🏫 Giảng Viên
+          </button>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="label-email">Email / MSSV</label>
+          <input
+            type="text"
+            class="form-input"
+            id="input-email"
+            placeholder="nguyenvana@student.edu.vn"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mật Khẩu</label>
+          <input
+            type="password"
+            class="form-input"
+            id="input-pass"
+            placeholder="••••••••"
+            onkeydown="if (event.key === 'Enter') doLogin();"
+          />
+        </div>
+        <button class="btn-primary" onclick="doLogin()">Đăng Nhập</button>
+        <div style="text-align: center; margin-top: 14px">
+          <a
+            href="#"
+            onclick="openForgot(); return false;"
+            style="font-size: 0.82rem; color: #64748b; text-decoration: none; font-weight: 500;"
+          >
+            🔑 Quên mật khẩu?
+          </a>
+        </div>
+        <div class="footer-link">
+          © 2025 Quản Lý Sinh Viên – Powered by NestJS + PostgreSQL
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL QUÊN MẬT KHẨU -->
+    <div class="modal-overlay" id="forgot-overlay">
+      <div class="modal-box">
+        <div class="modal-head">
+          <h5 id="forgot-title">🔑 Quên Mật Khẩu</h5>
+          <button
+            onclick="closeForgot()"
+            style="background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;line-height:1;"
+          >×</button>
+        </div>
+        <div class="modal-body">
+          <div class="alert-msg" id="forgot-alert"></div>
+
+          <!-- Bước 1: Nhập Email -->
+          <div id="forgot-step1">
+            <p style="font-size:0.875rem;color:#64748b;margin-bottom:20px;line-height:1.6;">
+              Nhập email tài khoản của bạn để nhận mã OTP xác thực.
+            </p>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-input"
+                id="forgot-email"
+                placeholder="example@gmail.com"
+                onkeydown="if (event.key === 'Enter') submitStep1();"
+              />
+            </div>
+            <button class="btn-primary" id="btn-step1" onclick="submitStep1()">
+              Gửi Mã OTP →
+            </button>
+            <button class="btn-outline" onclick="closeForgot()">Hủy</button>
+          </div>
+
+          <!-- Bước 2: Nhập OTP -->
+          <div id="forgot-step2" style="display:none;">
+            <p style="font-size:0.875rem;color:#64748b;margin-bottom:4px;line-height:1.6;">
+              Mã OTP đã được gửi đến
+            </p>
+            <p style="font-size:0.9rem;font-weight:700;color:#0f4c81;margin-bottom:16px;" id="forgot-email-display-otp"></p>
+            <p style="font-size:0.82rem;color:#64748b;text-align:center;margin-bottom:4px;">
+              Nhập mã <strong>6 số</strong> trong email của bạn
+            </p>
+            <div class="otp-inputs">
+              <input class="otp-input" type="text" maxlength="1" id="otp0" oninput="otpInput(0)" onkeydown="otpKeydown(event,0)" />
+              <input class="otp-input" type="text" maxlength="1" id="otp1" oninput="otpInput(1)" onkeydown="otpKeydown(event,1)" />
+              <input class="otp-input" type="text" maxlength="1" id="otp2" oninput="otpInput(2)" onkeydown="otpKeydown(event,2)" />
+              <input class="otp-input" type="text" maxlength="1" id="otp3" oninput="otpInput(3)" onkeydown="otpKeydown(event,3)" />
+              <input class="otp-input" type="text" maxlength="1" id="otp4" oninput="otpInput(4)" onkeydown="otpKeydown(event,4)" />
+              <input class="otp-input" type="text" maxlength="1" id="otp5" oninput="otpInput(5)" onkeydown="otpKeydown(event,5)" />
+            </div>
+            <div class="resend-row">
+              Không nhận được? &nbsp;
+              <button class="resend-btn" id="resend-btn" onclick="resendOtp()" disabled>
+                Gửi lại (<span class="countdown" id="countdown">120</span>s)
+              </button>
+            </div>
+            <button class="btn-primary" id="btn-step2" onclick="submitStep2()">
+              Xác Nhận OTP →
+            </button>
+            <button class="btn-outline" onclick="backToStep1()">← Quay lại</button>
+          </div>
+
+          <!-- Bước 3: Nhập mật khẩu mới -->
+          <div id="forgot-step3" style="display:none;">
+            <p style="font-size:0.875rem;color:#64748b;margin-bottom:6px;line-height:1.6;">
+              Đặt lại mật khẩu cho
+            </p>
+            <p style="font-size:0.9rem;font-weight:700;color:#0f4c81;margin-bottom:20px;" id="forgot-email-display"></p>
+            <div class="form-group">
+              <label class="form-label">Mật Khẩu Mới</label>
+              <div class="pw-wrap">
+                <input
+                  type="password"
+                  class="form-input"
+                  id="new-pw"
+                  placeholder="Tối thiểu 6 ký tự"
+                  onkeydown="if (event.key === 'Enter') submitStep3();"
+                />
+                <button type="button" class="pw-toggle" onclick="togglePw('new-pw', this)">👁</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Xác Nhận Mật Khẩu</label>
+              <div class="pw-wrap">
+                <input
+                  type="password"
+                  class="form-input"
+                  id="confirm-pw"
+                  placeholder="Nhập lại mật khẩu"
+                  onkeydown="if (event.key === 'Enter') submitStep3();"
+                />
+                <button type="button" class="pw-toggle" onclick="togglePw('confirm-pw', this)">👁</button>
+              </div>
+            </div>
+            <button class="btn-primary" id="btn-step3" onclick="submitStep3()">
+              Đặt Lại Mật Khẩu
+            </button>
+            <button class="btn-outline" onclick="backToStep2()">← Quay lại</button>
+          </div>
+
+          <!-- Thành công -->
+          <div id="forgot-success" style="display:none;text-align:center;padding:10px 0 6px;">
+            <div style="font-size:3.5rem;margin-bottom:14px;">🎉</div>
+            <div style="font-weight:800;font-size:1.1rem;color:#065f46;margin-bottom:8px;">
+              Đặt lại mật khẩu thành công!
+            </div>
+            <div style="font-size:0.875rem;color:#64748b;margin-bottom:24px;line-height:1.6;">
+              Mật khẩu của bạn đã được cập nhật.<br />Hãy đăng nhập với mật khẩu mới.
+            </div>
+            <button class="btn-primary" onclick="closeForgot()">
+              Đăng Nhập Ngay →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── Khởi tạo EmailJS ──
+      emailjs.init('wwRyr9w02XWaZy4P9');
+
+      const EMAILJS_SERVICE_ID  = 'service_bd1po7r';
+      const EMAILJS_TEMPLATE_ID = 'template_sq5veju';
+
+      let currentRole  = 'sv';
+      let forgotEmail  = '';
+      let otpCode      = '';      // OTP sinh ra
+      let otpExpiry    = 0;       // timestamp hết hạn
+      let countdownTimer = null;
+
+      // ── Role tabs ──
+      function switchRole(role) {
+        currentRole = role;
+        document.getElementById('tab-sv').className = 'role-tab' + (role === 'sv' ? ' active' : '');
+        document.getElementById('tab-gv').className = 'role-tab' + (role === 'gv' ? ' active' : '');
+        document.getElementById('label-email').textContent = role === 'sv' ? 'Email / MSSV' : 'Email Giảng Viên';
+        document.getElementById('input-email').placeholder  = role === 'sv' ? 'nguyenvana@student.edu.vn' : 'tranminh@edu.vn';
+      }
+
+      // ── Đăng nhập ──
+      async function doLogin() {
+        const email = document.getElementById('input-email').value.trim();
+        const pass  = document.getElementById('input-pass').value;
+        if (!email || !pass) { alert('Vui lòng điền email và mật khẩu!'); return; }
+
+        const btn = document.querySelector('.btn-primary');
+        btn.textContent = 'Đang đăng nhập...';
+        btn.disabled = true;
+
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, matKhau: pass }),
+          });
+          let data;
+          try { data = await res.json(); } catch (e) { throw new Error('Server lỗi, thử lại!'); }
+
+          if (!res.ok) {
+            alert(data.message || 'Email hoặc mật khẩu không đúng!');
+            btn.textContent = 'Đăng Nhập';
+            btn.disabled = false;
+            return;
+          }
+
+          localStorage.setItem('accessToken', data.accessToken || '');
+          localStorage.setItem('vaiTro', data.vaiTro || '');
+          localStorage.setItem('userId', String(data.userId || ''));
+
+          const isGV = (data.vaiTro || '').toLowerCase().includes('giang');
+          if (isGV) {
+            try {
+              const gv = await fetch('/api/giang-vien/me/' + data.userId).then(r => r.json());
+              if (gv?.id) {
+                localStorage.setItem('giangVienId',    String(gv.id));
+                localStorage.setItem('giangVienHoTen', gv.hoTen || '');
+                localStorage.setItem('giangVienBoMon', gv.boMon || '');
+              }
+            } catch (e) {}
+            window.location.href = '/giang-vien';
+          } else {
+            try {
+              const sv = await fetch('/api/sinh-vien/me/' + data.userId).then(r => r.json());
+              if (sv?.id) {
+                localStorage.setItem('sinhVienId',   String(sv.id));
+                localStorage.setItem('sinhVienHoTen', sv.hoTen || '');
+                localStorage.setItem('sinhVienMssv',  sv.mssv || '');
+                localStorage.setItem('sinhVienLop',   sv.lop  || '');
+              }
+            } catch (e) {}
+            window.location.href = '/sinh-vien';
+          }
+        } catch (err) {
+          alert('Lỗi: ' + err.message);
+          btn.textContent = 'Đăng Nhập';
+          btn.disabled = false;
+        }
+      }
+
+      // ── Mở / Đóng modal ──
+      function openForgot() {
+        forgotEmail = '';
+        otpCode = '';
+        clearOtpInputs();
+        showAlert('');
+        document.getElementById('forgot-email').value    = '';
+        document.getElementById('new-pw').value          = '';
+        document.getElementById('confirm-pw').value      = '';
+        showStep('step1');
+        document.getElementById('forgot-title').textContent = '🔑 Quên Mật Khẩu';
+        document.getElementById('forgot-overlay').classList.add('show');
+        setTimeout(() => document.getElementById('forgot-email').focus(), 300);
+      }
+
+      function closeForgot() {
+        stopCountdown();
+        document.getElementById('forgot-overlay').classList.remove('show');
+      }
+
+      function showStep(step) {
+        ['forgot-step1','forgot-step2','forgot-step3','forgot-success'].forEach(id => {
+          document.getElementById(id).style.display = 'none';
+        });
+        document.getElementById(step === 'success' ? 'forgot-success' : 'forgot-' + step).style.display = 'block';
+      }
+
+      function showAlert(msg, type = 'error') {
+        const el = document.getElementById('forgot-alert');
+        el.className = 'alert-msg' + (msg ? ' ' + type : '');
+        el.textContent = msg;
+      }
+
+      // ── Bước 1: Kiểm tra email & gửi OTP ──
+      async function submitStep1() {
+        const email = document.getElementById('forgot-email').value.trim();
+        if (!email) { showAlert('Vui lòng nhập địa chỉ email!'); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAlert('Địa chỉ email không hợp lệ!'); return; }
+
+        const btn = document.getElementById('btn-step1');
+        btn.textContent = 'Đang kiểm tra...';
+        btn.disabled = true;
+        showAlert('');
+
+        try {
+          // Kiểm tra email tồn tại trên server
+          const res  = await fetch('/api/auth/quen-mat-khau/kiem-tra-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
+            showAlert(data.message || 'Email không tồn tại trong hệ thống!');
+            btn.textContent = 'Gửi Mã OTP →';
+            btn.disabled = false;
+            return;
+          }
+
+          // Sinh OTP 6 số
+          otpCode  = String(Math.floor(100000 + Math.random() * 900000));
+          otpExpiry = Date.now() + 5 * 60 * 1000; // hết hạn 5 phút
+          forgotEmail = email;
+
+          btn.textContent = 'Đang gửi OTP...';
+
+          // Thời gian hết hạn hiển thị
+          const expireTime = new Date(otpExpiry).toLocaleTimeString('vi-VN');
+
+          // Gửi email qua EmailJS
+          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_email: email,
+            passcode: otpCode,
+            time:     expireTime,
+          });
+
+          // Chuyển sang bước 2
+          document.getElementById('forgot-email-display-otp').textContent = email;
+          clearOtpInputs();
+          showStep('step2');
+          document.getElementById('forgot-title').textContent = '📨 Nhập Mã OTP';
+          showAlert('');
+          startCountdown(120);
+          setTimeout(() => document.getElementById('otp0').focus(), 200);
+
+        } catch (e) {
+          showAlert('Lỗi gửi OTP. Vui lòng thử lại!');
+          btn.textContent = 'Gửi Mã OTP →';
+          btn.disabled = false;
+        }
+      }
+
+      // ── OTP input helpers ──
+      function otpInput(idx) {
+        const el = document.getElementById('otp' + idx);
+        const val = el.value.replace(/\D/g, '');
+        el.value = val ? val[0] : '';
+        el.classList.toggle('filled', !!el.value);
+        if (el.value && idx < 5) {
+          document.getElementById('otp' + (idx + 1)).focus();
+        }
+      }
+
+      function otpKeydown(e, idx) {
+        if (e.key === 'Backspace' && !document.getElementById('otp' + idx).value && idx > 0) {
+          document.getElementById('otp' + (idx - 1)).focus();
+        }
+        if (e.key === 'Enter') submitStep2();
+      }
+
+      function clearOtpInputs() {
+        for (let i = 0; i < 6; i++) {
+          const el = document.getElementById('otp' + i);
+          if (el) { el.value = ''; el.classList.remove('filled'); }
+        }
+      }
+
+      function getOtpValue() {
+        let val = '';
+        for (let i = 0; i < 6; i++) val += (document.getElementById('otp' + i).value || '');
+        return val;
+      }
+
+      // ── Đếm ngược & gửi lại OTP ──
+      function startCountdown(seconds) {
+        stopCountdown();
+        let remaining = seconds;
+        const btn  = document.getElementById('resend-btn');
+        const span = document.getElementById('countdown');
+        btn.disabled = true;
+        span.parentElement.style.display = 'block';
+
+        countdownTimer = setInterval(() => {
+          remaining--;
+          span.textContent = remaining;
+          if (remaining <= 0) {
+            stopCountdown();
+            btn.disabled = false;
+            btn.textContent = 'Gửi lại OTP';
+          }
+        }, 1000);
+      }
+
+      function stopCountdown() {
+        if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+      }
+
+      async function resendOtp() {
+        const btn = document.getElementById('resend-btn');
+        btn.disabled = true;
+        btn.textContent = 'Đang gửi...';
+        showAlert('');
+
+        try {
+          otpCode   = String(Math.floor(100000 + Math.random() * 900000));
+          otpExpiry = Date.now() + 5 * 60 * 1000;
+          const expireTime = new Date(otpExpiry).toLocaleTimeString('vi-VN');
+
+          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_email: forgotEmail,
+            passcode: otpCode,
+            time:     expireTime,
+          });
+
+          clearOtpInputs();
+          showAlert('Đã gửi lại mã OTP!', 'success');
+          startCountdown(120);
+          setTimeout(() => document.getElementById('otp0').focus(), 100);
+        } catch (e) {
+          showAlert('Gửi lại thất bại. Thử lại!');
+          btn.disabled = false;
+          btn.textContent = 'Gửi lại OTP';
+        }
+      }
+
+      // ── Bước 2: Xác nhận OTP ──
+      function submitStep2() {
+        const entered = getOtpValue();
+        showAlert('');
+
+        if (entered.length < 6) {
+          showAlert('Vui lòng nhập đủ 6 số!');
+          return;
+        }
+        if (Date.now() > otpExpiry) {
+          showAlert('Mã OTP đã hết hạn. Vui lòng gửi lại!');
+          return;
+        }
+        if (entered !== otpCode) {
+          showAlert('Mã OTP không đúng. Vui lòng thử lại!');
+          // Lắc nhẹ các ô OTP
+          document.querySelectorAll('.otp-input').forEach(el => {
+            el.style.borderColor = '#ef4444';
+            setTimeout(() => el.style.borderColor = '', 1000);
+          });
+          return;
+        }
+
+        stopCountdown();
+        document.getElementById('forgot-email-display').textContent = forgotEmail;
+        showStep('step3');
+        document.getElementById('forgot-title').textContent = '🔒 Mật Khẩu Mới';
+        showAlert('');
+        setTimeout(() => document.getElementById('new-pw').focus(), 200);
+      }
+
+      function backToStep2() {
+        showAlert('');
+        showStep('step2');
+        document.getElementById('forgot-title').textContent = '📨 Nhập Mã OTP';
+      }
+
+      // ── Bước 3: Đặt mật khẩu mới ──
+      async function submitStep3() {
+        const pw1 = document.getElementById('new-pw').value;
+        const pw2 = document.getElementById('confirm-pw').value;
+        showAlert('');
+
+        if (pw1.length < 6) { showAlert('Mật khẩu phải có ít nhất 6 ký tự!'); return; }
+        if (pw1 !== pw2)    { showAlert('Mật khẩu xác nhận không khớp!');       return; }
+
+        const btn = document.getElementById('btn-step3');
+        btn.textContent = 'Đang cập nhật...';
+        btn.disabled = true;
+
+        try {
+          const res  = await fetch('/api/auth/quen-mat-khau/dat-lai', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: forgotEmail, matKhauMoi: pw1 }),
+          });
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
+            showAlert(data.message || 'Không thể cập nhật mật khẩu. Thử lại!');
+            btn.textContent = 'Đặt Lại Mật Khẩu';
+            btn.disabled = false;
+            return;
+          }
+
+          showStep('success');
+          document.getElementById('forgot-title').textContent = '✅ Thành Công';
+          document.getElementById('input-email').value = forgotEmail;
+        } catch (e) {
+          showAlert('Lỗi kết nối. Vui lòng thử lại!');
+          btn.textContent = 'Đặt Lại Mật Khẩu';
+          btn.disabled = false;
+        }
+      }
+
+      // ── Quay lại bước 1 ──
+      function backToStep1() {
+        stopCountdown();
+        showAlert('');
+        document.getElementById('forgot-email').value = '';
+        showStep('step1');
+        document.getElementById('forgot-title').textContent = '🔑 Quên Mật Khẩu';
+        document.getElementById('btn-step1').textContent = 'Gửi Mã OTP →';
+        document.getElementById('btn-step1').disabled = false;
+      }
+
+      function togglePw(inputId, btn) {
+        const el = document.getElementById(inputId);
+        el.type = el.type === 'password' ? 'text' : 'password';
+        btn.textContent = el.type === 'password' ? '👁' : '🙈';
+      }
+
+      document.getElementById('forgot-overlay').addEventListener('click', function (e) {
+        if (e.target === this) closeForgot();
+      });
+    </script>
+  </body>
+</html>
